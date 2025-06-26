@@ -1,0 +1,44 @@
+services:
+  mysql:
+    image: mysql:8.0.42
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: madhu@555
+      MYSQL_DATABASE: mcq_interview
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - mynet
+    restart: always
+
+  backend:
+    image: back:latest
+    container_name: flask_back
+    env_file:
+      - ./backend/app/.env
+    ports:
+      - "5000:5000"
+    networks:
+      - mynet
+    restart: always
+    depends_on:
+      - mysql
+  frontend:
+    image: front:latest
+    container_name: flask_front
+    ports:
+      - "3000:3000"
+    networks:
+      - mynet
+    restart: always
+    depends_on:
+      - backend
+      
+
+
+networks:
+  mynet: 
+volumes:
+  mysql-data:
