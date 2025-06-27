@@ -16,7 +16,7 @@ const LoginPage = () => {
     setErrorMsg("");
 
     try {
-      const res = await axios.post("https://authqr.online/exambac/candidate/login", {
+      const res = await axios.post("http://3.135.184.212:5000/candidate/login", {
         user_id: userId,
         password: password,
       });
