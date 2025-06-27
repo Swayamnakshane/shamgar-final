@@ -85,3 +85,9 @@ admin_bp.add_url_rule(
     view_func=admin_views.AdminGetResults.as_view("admin_get_results"),
     methods=['GET']
 )
+
+admin_bp.add_url_rule(
+    "/upload/mcq",  # Route for changing password when logged in
+    view_func=admin_views.UploadMCQAPI.as_view("Upload_mcq_results"),
+    methods=['POST']
+)

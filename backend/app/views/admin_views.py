@@ -399,33 +399,61 @@ class GetAdminByObjectId(MethodView):
             return jsonify({'error': 'An unexpected error occurred.', 'details': str(e)}), 500
 
 
-
-
-import json
+from flask import request, jsonify
+from flask.views import MethodView
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.utils import secure_filename
 from datetime import datetime
 from pytz import timezone
-
+import os
+import json
 
 IST = timezone('Asia/Kolkata')
-def load_mcqs_from_json(filepath, batch_id, admin_id):
-    with open(filepath, 'r', encoding='utf-8') as file:
-        mcq_data = json.load(file)
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-    for idx, item in enumerate(mcq_data, start=1):
-        question = PythonMCQ(
-            batch_id=batch_id,
-            question=item['question'],
-            options=item['options'],
-            answer=item['answer'],
-            topic=item['topic'],
-            difficulty=item['difficulty'],
-            created_at=datetime.fromisoformat(item['created_at']).astimezone(IST),
-            created_by=admin_id
-        )
-        db.session.add(question)
+class UploadMCQAPI(MethodView):
+    @jwt_required()
+    def post(self):
+        admin_id = get_jwt_identity()
 
-    db.session.commit()
-    print(f"✅ {len(mcq_data)} MCQ questions added successfully.")
+        admin = Admin.query.get(admin_id)
+        if not admin:
+            return jsonify({"message": "Admin not found"}), 404
+
+        if 'file' not in request.files:
+            return jsonify({"message": "No file part in the request"}), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"message": "No selected file"}), 400
+
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                mcq_data = json.load(f)
+
+            for item in mcq_data:
+                mcq = PythonMCQ(
+                    question=item['question'],
+                    options=item['options'],
+                    answer=item['answer'],
+                    topic=item['topic'],
+                    difficulty=item['difficulty'],
+                    created_at=datetime.now(IST),
+                    created_by=admin_id
+                )
+                db.session.add(mcq)
+
+            db.session.commit()
+            return jsonify({"message": f"{len(mcq_data)} MCQs uploaded successfully"}), 201
+
+        except Exception as e:
+            return jsonify({"message": "Failed to process file", "error": str(e)}), 500
+
 
 
 from flask.views import MethodView

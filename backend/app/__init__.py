@@ -8,7 +8,6 @@ from .config import Config
 from .models import db
 from .routes.admin_routes import admin_bp
 from .routes.candidate_routes import candidate_bp  # Import your candidate routes
-from .views.admin_views import load_mcqs_from_json  # Import your CLI function here
 
 from flask_migrate import Migrate
 
@@ -28,9 +27,6 @@ def create_app():
 
     jwt = JWTManager(app)
 
-    @app.cli.command("load_mcqs")
-    def load_mcqs():
-        load_mcqs_from_json('python_mcqs.json', batch_id=1, admin_id=1)
 
     @app.errorhandler(NoAuthorizationError)
     def handle_missing_token(e):
