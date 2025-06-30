@@ -13,7 +13,7 @@ const ExamInstructions = () => {
     const token = localStorage.getItem("token");
     if (!token) return navigate("/");
 
-    axios.get("http://3.135.184.212:5000/candidate/profile", {
+    axios.get("http://3.133.147.40:5000/candidate/profile", {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
       const { exam_duration } = res.data;
@@ -31,7 +31,7 @@ const ExamInstructions = () => {
   if (!token) return navigate("/");
 
   try {
-    const res = await axios.post("http://3.135.184.212:5000/candidate/start_exam", {}, {
+    const res = await axios.post("http://3.133.147.40:5000/candidate/start_exam", {}, {
       headers: { Authorization: `Bearer ${token}` }
     });
 

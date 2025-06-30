@@ -27,13 +27,13 @@ const ExamPage = () => {
     if (!token) return navigate("/");
 
     axios
-      .get("http://3.135.184.212:5000/candidate/get/questions", {
+      .get("http://3.133.147.40:5000/candidate/get/questions", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setQuestions(res.data.mcqs));
 
     axios
-      .get("http://3.135.184.212:5000/candidate/profile", {
+      .get("http://3.133.147.40:5000/candidate/profile", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setCandidate(res.data.candidate_name));
@@ -62,7 +62,7 @@ const ExamPage = () => {
     const token = localStorage.getItem("token");
     axios
       .post(
-        "http://3.135.184.212:5000/candidate/answer",
+        "http://3.133.147.40:5000/candidate/answer",
         { question_id: qid, answer: selectedLetter },
         { headers: { Authorization: `Bearer ${token}` } }
       )
@@ -72,7 +72,7 @@ const ExamPage = () => {
   const handleSubmit = () => {
     const token = localStorage.getItem("token");
     axios
-      .post("http://3.135.184.212:5000/candidate/submit/exam", {}, {
+      .post("http://3.133.147.40:5000/candidate/submit/exam", {}, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {
